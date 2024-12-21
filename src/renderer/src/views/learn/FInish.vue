@@ -140,7 +140,7 @@ async function switchLike() {
 <style scoped>
 .name {
   font-size: 35px;
-}
+} 
 .wordList {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
