@@ -69,15 +69,25 @@ jobs:
       - name: Test Release Text
         run: cat Release.txt
         
-      - name: Tag the repository
-        id: tag
-        run: |
-          # See https://docs.github.com/en/get-started/using-git/dealing-with-special-characters-in-branch-and-tag-names
-          TAG=v$(date -Iseconds | sed 's/[T:\+]/-/g')
-          echo "$TAG"
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
-          git tag -a $TAG -m "Published version $TAG" ${GITHUB_SHA}
-          git push origin $TAG
+      # - name: Tag the repository
+      #   id: tag
+      #   run: |
+      #     # See https://docs.github.com/en/get-started/using-git/dealing-with-special-characters-in-branch-and-tag-names
+      #     TAG=v$(date -Iseconds | sed 's/[T:\+]/-/g')
+      #     echo "$TAG"
+      #     echo "tag=$TAG" >> $GITHUB_OUTPUT
+      #     git tag -a $TAG -m "Published version $TAG" ${GITHUB_SHA}
+      #     git push origin $TAG
+# Run # See https://docs.github.com/en/get-started/using-git/dealing-with-special-characters-in-branch-and-tag-names
+# TAG=v$(date -Iseconds | sed 's/[T:\+]/-/g'): D:\a\_temp\4fc464b9-4bd5-4eee-9e93-ad7f69874b35.ps1:3
+# Line |
+#    3 |  TAG=v$(date -Iseconds | sed 's/[T:\+]/-/g')
+#      |  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#      | The term 'TAG=v$(date -Iseconds | sed 's/[T:\+]/-/g')' is not recognized as a name of a cmdlet, function, script
+#      | file, or executable program. Check the spelling of the name, or if a path was included, verify that the path is
+#      | correct and try again.
+# Error: Process completed with exit code 1.
+
 
       - name: release
         uses: softprops/action-gh-release@v2
