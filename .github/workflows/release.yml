@@ -1,0 +1,83 @@
+name: Build and Release
+on:
+  # - push
+  # - pull_request
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+    tags:
+      - 'v*.*.*'
+## reference: https://electron-vite.org/guide/distribution
+jobs:
+  release:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+      - name: Github checkout
+        uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          version: 9
+          run_install: false
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '16'
+          # cache: 'pnpm'
+
+      - name: Install dependencies
+        run: npm i --force ## npm ci
+
+      - name: Package Electron app
+        run: npm run package
+      - name: Show Package files location
+        run: ls -R out/make && ls -R out # 根据你的输出目录调整路径
+      # abacefty123li
+      ## 感觉有了release 需要 artifact  release极好了 注意release 必须推tag 才能触发release 这个action 是个坑 要注意
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.os }}-build
+          path: out/make/* # 根据你的输出目录调整路径
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.os }}-build
+          path: ./artifacts      
+          
+      - name: release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          files: |
+            dist/*.exe
+            dist/*.zip
+            dist/*.dmg
+            dist/*.AppImage
+            dist/*.snap
+            dist/*.deb
+            dist/*.rpm
+            dist/*.tar.gz
+            dist/*.yml
+            dist/*.blockmap
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+    
+      # - name: Upload Release Assets
+      #   uses: actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
+      #     asset_path: ./artifacts/*
+      #     asset_name: ${{ matrix.os }}-build.zip
+      #     asset_content_type: application/zip 
