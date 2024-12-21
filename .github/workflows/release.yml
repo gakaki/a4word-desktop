@@ -69,23 +69,35 @@ jobs:
       - name: Test Release Text
         run: cat Release.txt
         
+      - name: Tag the repository
+        id: tag
+        run: |
+          # See https://docs.github.com/en/get-started/using-git/dealing-with-special-characters-in-branch-and-tag-names
+          TAG=v$(date -Iseconds | sed 's/[T:\+]/-/g')
+          echo "$TAG"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          git tag -a $TAG -m "Published version $TAG" ${GITHUB_SHA}
+          git push origin $TAG
+
       - name: release
-        uses: softprops/action-gh-release@v1
-        with:
-          draft: true
-          files: |
-            dist/*.exe
-            dist/*.zip
-            dist/*.dmg
-            dist/*.AppImage
-            dist/*.snap
-            dist/*.deb
-            dist/*.rpm
-            dist/*.tar.gz
-            dist/*.yml
-            dist/*.blockmap
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          uses: softprops/action-gh-release@v2
+          with:
+            tag_name: 123
+            if: startsWith(github.ref, 'refs/tags/')
+            draft: true
+            files: |
+              dist/*.exe
+              dist/*.zip
+              dist/*.dmg
+              dist/*.AppImage
+              dist/*.snap
+              dist/*.deb
+              dist/*.rpm
+              dist/*.tar.gz
+              dist/*.yml
+              dist/*.blockmap
+          env:
+            GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
 
     
       # - name: Upload Release Assets
