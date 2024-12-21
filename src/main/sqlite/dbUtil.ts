@@ -1,3 +1,4 @@
+
 async function query(db, sql, params = []) {
 	const data = await db.execute({
 		sql: sql,

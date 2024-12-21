@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { query } from "./dbUtil";
+import { query,querySingle, run } from "./dbUtil";
 
 // 增加当前类型计数，如果不存在则保存为1
 export async function increTypeCount(id) {

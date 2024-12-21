@@ -1,7 +1,6 @@
 import { db } from "./db";
 import { query, querySingle, run } from "./dbUtil";
 
-//
 export async function getDictById(params) {
 	const sql = "SELECT id, name, wordCnt, intro FROM dict WHERE id = ?";
 	return await querySingle(db, sql, [params]);
