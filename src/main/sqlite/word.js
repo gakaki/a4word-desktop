@@ -104,7 +104,6 @@ export async function listAll() {
 }
 
 export async function save(data) {
-	const db = new Database("tw.db");
 	const { word, content } = data;
 	const wordSql = `INSERT INTO word (word, completeTag, likeTag, reviewTimestamp, reviewCycle) VALUES(?, 0, 0, -1, 7)`;
 	console.log(wordSql);
