@@ -35,10 +35,22 @@ jobs:
       - name: Install dependencies
         run: pnpm i --force
 
-      - name: Package Electron app
-        run: npm run package
+
+      - name: build-linux
+        if: matrix.os == 'ubuntu-latest'
+        run: npm run build:linux
+
+      - name: build-mac
+        if: matrix.os == 'macos-latest'
+        run: npm run build:mac
+
+      - name: build-win
+        if: matrix.os == 'windows-latest'
+        run: npm run build:win
+
       - name: Show Package files location
         run: ls -R out/make && ls -R out # 根据你的输出目录调整路径
+
       # abacefty123li
       ## 感觉有了release 需要 artifact  release极好了 注意release 必须推tag 才能触发release 这个action 是个坑 要注意
       - name: Upload Artifacts
