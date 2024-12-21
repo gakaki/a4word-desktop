@@ -1,9 +1,9 @@
 {
-  "name": "electron-app",
+  "name": "A4背单词桌面版",
   "version": "1.0.0",
-  "description": "An Electron application with Vue and TypeScript",
+  "description": "An  application with Vue and TypeScript,Build for learn words",
   "main": "./out/main/index.js",
-  "author": "example.com",
+  "author": "Shuangwei and gakaki",
   "homepage": "https://electron-vite.org",
   "scripts": {
     "format": "prettier --write .",
@@ -23,7 +23,13 @@
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/utils": "^3.0.0",
-    "electron-updater": "^6.3.9"
+    "electron-updater": "^6.3.9",
+    "better-sqlite3": "^11.7.0",
+    "electron-squirrel-startup": "^1.0.1",
+    "vue-router": "^4.5.0",
+    "vue-virtual-scroller": "^2.0.0-beta.8",
+    "xlsx": "^0.18.5",
+    "axios": "^1.7.9"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config": "^1.0.2",
