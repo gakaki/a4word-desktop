@@ -80,24 +80,24 @@ jobs:
       #     git push origin $TAG
 
       - name: release
-          uses: softprops/action-gh-release@v2
-          with:
-            tag_name: 1.0
-            # if: startsWith(github.ref, 'refs/tags/')
-            draft: true
-            files: |
-              dist/*.exe
-              dist/*.zip
-              dist/*.dmg
-              dist/*.AppImage
-              dist/*.snap
-              dist/*.deb
-              dist/*.rpm
-              dist/*.tar.gz
-              dist/*.yml
-              dist/*.blockmap
-          env:
-            GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: 1.0
+          # if: startsWith(github.ref, 'refs/tags/')
+          draft: true
+          files: |
+            dist/*.exe
+            dist/*.zip
+            dist/*.dmg
+            dist/*.AppImage
+            dist/*.snap
+            dist/*.deb
+            dist/*.rpm
+            dist/*.tar.gz
+            dist/*.yml
+            dist/*.blockmap
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
 
     
       # - name: Upload Release Assets
