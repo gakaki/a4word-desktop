@@ -82,7 +82,7 @@ jobs:
       - name: release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: $TAG
+          tag_name: ${GITHUB_SHA}
           draft: true
           files: |
             dist/*.exe
@@ -93,8 +93,8 @@ jobs:
             dist/*.deb
             dist/*.rpm
             dist/*.tar.gz
-            dist/*.yml
-            dist/*.blockmap
+            # dist/*.yml
+            # dist/*.blockmap
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
