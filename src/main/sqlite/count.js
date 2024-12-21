@@ -1,6 +1,5 @@
 import { query, querySingle, run } from './dbUtil';
-import Database from 'better-sqlite3';
-const db = new Database('resources/tw.db');
+import { db } from './db'
 
 // 增加当前类型计数，如果不存在则保存为1
 export function increTypeCount(id) {

@@ -1,6 +1,5 @@
 import { query, querySingle, run } from './dbUtil';
-import Database from 'better-sqlite3';
-const db = new Database('resources/tw.db');
+import { db } from './db'
 
 // 
 export function getDictById(params) {
