@@ -53,11 +53,11 @@ jobs:
 
       # abacefty123li
       ## 感觉有了release 需要 artifact  release极好了 注意release 必须推tag 才能触发release 这个action 是个坑 要注意
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.os }}-build
-          path: dist/*
+      # - name: Upload Artifacts
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: ${{ matrix.os }}-build
+      #     path: dist/*
 
       # - name: Download Artifacts
       #   uses: actions/download-artifact@v4
@@ -68,9 +68,7 @@ jobs:
         run: echo ${{ github.sha }} > Release.txt
       - name: Test Release Text
         run: cat Release.txt
-      - name: Release
-        uses: softprops/action-gh-release@v2
-
+        
       - name: release
         uses: softprops/action-gh-release@v1
         with:
