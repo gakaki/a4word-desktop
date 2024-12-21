@@ -92,7 +92,7 @@ jobs:
       - name: release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${GITHUB_SHA}
+          # tag_name: ${GITHUB_SHA}
           draft: true
           files: |
             dist/*.exe
