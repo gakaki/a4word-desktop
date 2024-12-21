@@ -1,5 +1,5 @@
 appId: com.a4word.app
-productName: A4背单词
+productName: a4word
 directories:
   buildResources: build
 files:
