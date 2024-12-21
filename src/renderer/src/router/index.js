@@ -4,7 +4,7 @@ import Home from "../views/home/Home.vue";
 import Finish from "../views/learn/finish.vue";
 import Learn from "../views/learn/Learn.vue";
 import Review from "../views/learn/Review.vue";
-import Task from "../views/total/Task.vue";
+import Task from "../views/total/Task.vue"; 
 import Today from "../views/total/Today.vue";
 const routes = [
 	{
