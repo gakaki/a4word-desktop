@@ -1,5 +1,5 @@
 {
-  "name": "A4背单词桌面版",
+  "name": "A4WordDesktop",
   "version": "1.0.0",
   "description": "An  application with Vue and TypeScript,Build for learn words",
   "main": "./out/main/index.js",
