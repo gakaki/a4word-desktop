@@ -49,7 +49,7 @@ jobs:
         run: npm run build:win
 
       - name: Show Package files location
-        run: ls -R out/make && ls -R out # 根据你的输出目录调整路径
+        run: ls -R out/dist && ls -R dist # 根据你的输出目录调整路径
 
       # abacefty123li
       ## 感觉有了release 需要 artifact  release极好了 注意release 必须推tag 才能触发release 这个action 是个坑 要注意
@@ -57,7 +57,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.os }}-build
-          path: out/make/* # 根据你的输出目录调整路径
+          path: dist/* # 根据你的输出目录调整路径
 
       - name: Download Artifacts
         uses: actions/download-artifact@v4
