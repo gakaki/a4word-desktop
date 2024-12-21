@@ -1,7 +1,7 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 import DictList from "../views/home/DictList.vue";
 import Home from "../views/home/Home.vue";
-import finish from "../views/learn/finish.vue";
+import Finish from "../views/learn/FinishMe.vue";
 import Learn from "../views/learn/Learn.vue";
 import Review from "../views/learn/Review.vue";
 import Task from "../views/total/Task.vue"; 
@@ -35,7 +35,7 @@ const routes = [
 	{
 		path: "/finish",
 		name: "Finish",
-		component: finish,
+		component: Finish,
 	},
 	{
 		path: "/today",
