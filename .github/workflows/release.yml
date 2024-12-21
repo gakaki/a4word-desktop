@@ -7,7 +7,7 @@ on:
     branches:
       - main
     tags:
-      - 'v*.*.*'
+      - '*.*.*'
 ## reference: https://electron-vite.org/guide/distribution
 jobs:
   release:
