@@ -100,18 +100,18 @@
 </template>
 
 <script>
-import TLearnList from '../../components/list/TLearnList.vue'
-import TReviewList from '../../components/list/TReviewList.vue'
-import TodayList from '../../components/list/TodayList.vue'
-import TYesterdayList from '../../components/list/TYesterdayList.vue'
+import TLearnList from "../../components/list/TLearnList.vue";
+import TReviewList from "../../components/list/TReviewList.vue";
+import TYesterdayList from "../../components/list/TYesterdayList.vue";
+import TodayList from "../../components/list/TodayList.vue";
 export default {
-  components: {
-    TodayList,
-    TReviewList,
-    TLearnList,
-    TYesterdayList
-  }
-}
+	components: {
+		TodayList,
+		TReviewList,
+		TLearnList,
+		TYesterdayList,
+	},
+};
 </script>
 
 <script setup>
@@ -125,17 +125,17 @@ let seeTag = ref(false || localStorage.getItem('seeTag') == 'true')
 // 动态词表
 let currentList = ref('TodayList')
 
-function switchSeeTag() {
+async function switchSeeTag() {
   seeTag.value = !seeTag.value
   localStorage.setItem('seeTag', seeTag.value)
 }
 
-function switchLike() {
+async function switchLike() {
   cur.value.likeTag = !cur.value.likeTag
   window.word.switchLike(cur.value.id)
 }
 
-function switchComplete() {
+async function switchComplete() {
   cur.value.completeTag = !cur.value.completeTag
   window.word.switchComplete(cur.value.id)
   if (cur.value.completeTag) wordIndex.value++
@@ -195,12 +195,12 @@ const handleKeyup = (event) => {
 }
 
 // 避免空格下拉
-document.addEventListener('keydown', function (event) {
+document.addEventListener('keydown', async function (event) {
   if (event.key === ' ') event.preventDefault()
 })
 
 // bug of virtual-scroll when update list instead of dymanic component
-function switchComponent(listName) {
+async function switchComponent(listName) {
   if (listName === currentList.value) return
   currentList.value = listName
 }

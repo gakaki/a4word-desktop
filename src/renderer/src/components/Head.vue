@@ -19,27 +19,27 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
 
-const router = useRouter()
-let currentTheme = ref(null)
+const router = useRouter();
+const currentTheme = ref(null);
 
 onMounted(() => {
-  currentTheme.value = localStorage.getItem('theme') || 'light'
-  document.documentElement.setAttribute('data-theme', currentTheme.value)
-})
+	currentTheme.value = localStorage.getItem("theme") || "light";
+	document.documentElement.setAttribute("data-theme", currentTheme.value);
+});
 
-function toggleTheme() {
-  currentTheme.value = currentTheme.value === 'dark' ? 'light' : 'dark'
-  document.documentElement.setAttribute('data-theme', currentTheme.value)
-  localStorage.setItem('theme', currentTheme.value)
+async function toggleTheme() {
+	currentTheme.value = currentTheme.value === "dark" ? "light" : "dark";
+	document.documentElement.setAttribute("data-theme", currentTheme.value);
+	localStorage.setItem("theme", currentTheme.value);
 }
-function minimize() {
-  window.api.minimize()
+async function minimize() {
+	window.api.minimize();
 }
-function close() {
-  window.api.close()
+async function close() {
+	window.api.close();
 }
 </script>
 

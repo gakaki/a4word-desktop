@@ -67,114 +67,123 @@
 </template>
 
 <script setup>
-import { onMounted, watch, defineProps, ref } from 'vue'
+import { defineProps, onMounted, ref, watch } from "vue";
+import { useRouter } from "vue-router";
+import { speech } from "../../util/sound";
 import {
-  cur,
-  chars,
-  wordIndex,
-  charIndex,
-  wordList,
-  switchLike,
-  switchComplete
-} from '../../util/wordUtil'
-import { speech } from '../../util/sound'
-import { useRouter } from 'vue-router'
-const router = useRouter()
+	charIndex,
+	chars,
+	cur,
+	switchComplete,
+	switchLike,
+	wordIndex,
+	wordList,
+} from "../../util/wordUtil";
+const router = useRouter();
 
-const props = defineProps(['nameIndex']) // 索引名字
-let nameIndex = props.nameIndex
+const props = defineProps(["nameIndex"]); // 索引名字
+const nameIndex = props.nameIndex;
 
 // set empty then init：wordList, cur, wordIndex, chars
-const dictId = localStorage.getItem('dictId')
+const dictId = localStorage.getItem("dictId");
 const initData = async () => {
-  wordList.value = chars.value = []
-  cur.value = null
-  if (nameIndex === 'learnIndex') {
-    wordList.value = await window.word.listLearnByDictId(dictId)
-  } else if (nameIndex === 'reviewIndex') {
-    wordList.value = await window.word.listReviewByDictId()
-  }
-  if (wordList.value.length == 0) {
-    router.push('/')
-    return
-  }
-  updateWord(0)
+	wordList.value = chars.value = [];
+	cur.value = null;
+	if (nameIndex === "learnIndex") {
+		wordList.value = await window.word.listLearnByDictId(dictId);
+	} else if (nameIndex === "reviewIndex") {
+		wordList.value = await window.word.listReviewByDictId();
+	}
+	if (wordList.value.length == 0) {
+		router.push("/");
+		return;
+	}
+	updateWord(0);
+};
+
+async function submit() {
+	const ids = wordList.value.map((word) => word.id).join(",");
+	const tmpIds = wordList.value
+		.filter((word) => word.completeTag === 0)
+		.map((word) => word.id)
+		.join(",");
+
+	if (nameIndex === "reviewIndex") {
+		localStorage.setItem(
+			"reviewIds",
+			(localStorage.getItem("reviewIds") || "-1") + "," + tmpIds,
+		);
+		const keepList = wordList.value
+			.filter((word) => word.keepTag === true)
+			.map((word) => word.id);
+		router.push({
+			path: "/finish",
+			query: { ids: ids, keepList: JSON.stringify(keepList), path: "review" },
+		});
+	} else if (nameIndex === "learnIndex") {
+		localStorage.setItem(
+			"learnIds",
+			(localStorage.getItem("learnIds") || "-1") + "," + tmpIds,
+		);
+		router.push({ path: "/finish", query: { ids: ids, path: "learn" } });
+	}
 }
 
-function submit() {
-  let ids = wordList.value.map((word) => word.id).join(',')
-  let tmpIds = wordList.value
-    .filter((word) => word.completeTag === 0)
-    .map((word) => word.id)
-    .join(',')
-
-  if (nameIndex === 'reviewIndex') {
-    localStorage.setItem('reviewIds', (localStorage.getItem('reviewIds') || '-1') + ',' + tmpIds)
-    let keepList = wordList.value.filter((word) => word.keepTag === true).map((word) => word.id)
-    router.push({
-      path: '/finish',
-      query: { ids: ids, keepList: JSON.stringify(keepList), path: 'review' }
-    })
-  } else if (nameIndex === 'learnIndex') {
-    localStorage.setItem('learnIds', (localStorage.getItem('learnIds') || '-1') + ',' + tmpIds)
-    router.push({ path: '/finish', query: { ids: ids, path: 'learn' } })
-  }
-}
-
-let dialogWord = ref(null)
-function playClick(index) {
-  if (index >= wordList.value.length || index < 0) return // 越界
-  dialogWord.value = wordList.value[index]
-  window.word.fetchContentByWordId(dialogWord.value.id).then((data) => {
-    let tmp = JSON.parse(data.content)
-    dialogWord.value.voice = tmp.voice
-    dialogWord.value.tran = tmp.tran
-    dialogWord.value.phrase = tmp.phrase
-    dialogWord.value.sentence = tmp.sentence
-  })
-  speech(dialogWord.value.word)
+const dialogWord = ref(null);
+async function playClick(index) {
+	if (index >= wordList.value.length || index < 0) return; // 越界
+	dialogWord.value = wordList.value[index];
+	window.word.fetchContentByWordId(dialogWord.value.id).then((data) => {
+		const tmp = JSON.parse(data.content);
+		dialogWord.value.voice = tmp.voice;
+		dialogWord.value.tran = tmp.tran;
+		dialogWord.value.phrase = tmp.phrase;
+		dialogWord.value.sentence = tmp.sentence;
+	});
+	speech(dialogWord.value.word);
 }
 
 // 1、updateWord：边界维护，完成跳转，更新cur，cur.content, wordIndex，chars, charIndex
 // 2、speech, scroll
-function updateWord(index) {
-  if (wordList.value.length == 0) return
-  if (index < 0) index = 0
+async function updateWord(index) {
+	if (wordList.value.length == 0) return;
+	if (index < 0) index = 0;
 
-  // if end
-  if (wordList.value.length <= index) {
-    submit()
-    return
-  }
+	// if end
+	if (wordList.value.length <= index) {
+		submit();
+		return;
+	}
 
-  wordIndex.value = index
-  cur.value = wordList.value[index]
-  window.word.fetchContentByWordId(cur.value.id).then((data) => {
-    let tmp = JSON.parse(data.content)
-    cur.value.voice = tmp.voice
-    cur.value.tran = tmp.tran
-    cur.value.phrase = tmp.phrase
-    cur.value.sentence = tmp.sentence
-  })
+	wordIndex.value = index;
+	cur.value = wordList.value[index];
+	window.word.fetchContentByWordId(cur.value.id).then((data) => {
+		const tmp = JSON.parse(data.content);
+		cur.value.voice = tmp.voice;
+		cur.value.tran = tmp.tran;
+		cur.value.phrase = tmp.phrase;
+		cur.value.sentence = tmp.sentence;
+	});
 
-  chars.value = []
-  for (let i = 0; i < cur.value.word.length; i++) chars.value.push(cur.value.word[i])
-  charIndex.value = 0
+	chars.value = [];
+	for (let i = 0; i < cur.value.word.length; i++)
+		chars.value.push(cur.value.word[i]);
+	charIndex.value = 0;
 
-  speech(cur.value.word)
+	speech(cur.value.word);
 }
 
-function fetchClass(index) {
-  if (index == wordIndex.value) return 'positive item border'
-  if (wordList.value[index].completeTag) return 'item complete'
-  return 'item'
+async function fetchClass(index) {
+	if (index == wordIndex.value) return "positive item border";
+	if (wordList.value[index].completeTag) return "item complete";
+	return "item";
 }
 
 onMounted(() => {
-  initData()
-})
+	initData();
+});
 
-watch(wordIndex, (newValue) => updateWord(newValue))
+watch(wordIndex, (newValue) => updateWord(newValue));
 </script>
 
 

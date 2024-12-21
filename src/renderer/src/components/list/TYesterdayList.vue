@@ -22,8 +22,8 @@
 
 <script>
 export default {
-  name: 'TYesterdayList'
-}
+	name: "TYesterdayList",
+};
 </script>
 
 <script setup>
@@ -43,7 +43,7 @@ const initData = async () => {
 
 // 1、updateWord：边界维护，更新cur，cur.content, wordIndex，chars, charIndex
 // 2、speech, scroll
-function updateWord(index) {
+async function updateWord(index) {
   if (wordList.value.length == 0) return
   if (index < 0) index = 0
   if (index >= wordList.value.length) index = wordList.value.length - 1

@@ -53,130 +53,143 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref } from "vue";
 
-let map = ref(null)
-let rIndex = ref(0)
-let lIndex = ref(0)
-let list = ref([])
-let todayCount = ref(0)
-let totalCount = ref(0)
-let months = ref([])
+const map = ref(null);
+const rIndex = ref(0);
+const lIndex = ref(0);
+const list = ref([]);
+const todayCount = ref(0);
+const totalCount = ref(0);
+const months = ref([]);
 
 onMounted(() => {
-  window.count.yearCoutnList().then((data) => {
-    map.value = {}
-    for (let i = 0; i < data.length; i++) {
-      map.value[data[i].dayTimestamp] = data[i].cnt
-      totalCount.value += data[i].cnt
-    }
-    const yearTimestamp = 365 * 24 * 3600000
-    const currentTimestamp = new Date().setHours(0, 0, 0, 0)
-    const lastYearTimestamp = currentTimestamp - yearTimestamp
-    let weekday = new Date().getDay()
-    lIndex.value = weekday === 1 ? 6 : (weekday + 5) % 7
-    rIndex.value = 365 + lIndex.value
-    for (let time = lastYearTimestamp; time <= currentTimestamp; time += 3600 * 24 * 1000) {
-      let cnt = map.value[time] ? map.value[time] : 0
-      list.value.push([time, cnt])
-      if (time === currentTimestamp) todayCount.value = cnt
-    }
-    map.value = null
+	window.count.yearCoutnList().then((data) => {
+		map.value = {};
+		for (let i = 0; i < data.length; i++) {
+			map.value[data[i].dayTimestamp] = data[i].cnt;
+			totalCount.value += data[i].cnt;
+		}
+		const yearTimestamp = 365 * 24 * 3600000;
+		const currentTimestamp = new Date().setHours(0, 0, 0, 0);
+		const lastYearTimestamp = currentTimestamp - yearTimestamp;
+		const weekday = new Date().getDay();
+		lIndex.value = weekday === 1 ? 6 : (weekday + 5) % 7;
+		rIndex.value = 365 + lIndex.value;
+		for (
+			let time = lastYearTimestamp;
+			time <= currentTimestamp;
+			time += 3600 * 24 * 1000
+		) {
+			const cnt = map.value[time] ? map.value[time] : 0;
+			list.value.push([time, cnt]);
+			if (time === currentTimestamp) todayCount.value = cnt;
+		}
+		map.value = null;
 
-    calculateMonths()
-  })
-})
+		calculateMonths();
+	});
+});
 
-function interpolateColor(color1, color2, ratio) {
-  const hex = (x) => {
-    x = x.toString(16)
-    return x.length === 1 ? '0' + x : x
-  }
+async function interpolateColor(color1, color2, ratio) {
+	const hex = (x) => {
+		x = x.toString(16);
+		return x.length === 1 ? "0" + x : x;
+	};
 
-  const r = Math.ceil(
-    parseInt(color2.substring(1, 3), 16) * ratio +
-      parseInt(color1.substring(1, 3), 16) * (1 - ratio)
-  )
-  const g = Math.ceil(
-    parseInt(color2.substring(3, 5), 16) * ratio +
-      parseInt(color1.substring(3, 5), 16) * (1 - ratio)
-  )
-  const b = Math.ceil(
-    parseInt(color2.substring(5, 7), 16) * ratio +
-      parseInt(color1.substring(5, 7), 16) * (1 - ratio)
-  )
+	const r = Math.ceil(
+		Number.parseInt(color2.substring(1, 3), 16) * ratio +
+			Number.parseInt(color1.substring(1, 3), 16) * (1 - ratio),
+	);
+	const g = Math.ceil(
+		Number.parseInt(color2.substring(3, 5), 16) * ratio +
+			Number.parseInt(color1.substring(3, 5), 16) * (1 - ratio),
+	);
+	const b = Math.ceil(
+		Number.parseInt(color2.substring(5, 7), 16) * ratio +
+			Number.parseInt(color1.substring(5, 7), 16) * (1 - ratio),
+	);
 
-  return `#${hex(r)}${hex(g)}${hex(b)}`
+	return `#${hex(r)}${hex(g)}${hex(b)}`;
 }
 
-function getBackgroundColor(value) {
-  const ranges = [
-    { min: 0, max: 150, color1: '#ecf3e9', color2: '#defc85' },
-    { min: 150, max: 300, color1: '#defc85', color2: '#c1f335' },
-    { min: 300, max: 450, color1: '#c1f335', color2: '#a5d601' },
-    { min: 450, max: Infinity, color1: '#a5d601', color2: '#8eb901' }
-  ]
+async function getBackgroundColor(value) {
+	const ranges = [
+		{ min: 0, max: 150, color1: "#ecf3e9", color2: "#defc85" },
+		{ min: 150, max: 300, color1: "#defc85", color2: "#c1f335" },
+		{ min: 300, max: 450, color1: "#c1f335", color2: "#a5d601" },
+		{
+			min: 450,
+			max: Number.POSITIVE_INFINITY,
+			color1: "#a5d601",
+			color2: "#8eb901",
+		},
+	];
 
-  for (const range of ranges) {
-    if (value >= range.min && value <= range.max) {
-      const ratio = (value - range.min) / (range.max - range.min)
-      return interpolateColor(range.color1, range.color2, ratio)
-    }
-  }
-  return '#ecf3e9'
+	for (const range of ranges) {
+		if (value >= range.min && value <= range.max) {
+			const ratio = (value - range.min) / (range.max - range.min);
+			return interpolateColor(range.color1, range.color2, ratio);
+		}
+	}
+	return "#ecf3e9";
 }
 
-function checkRange(row, col) {
-  const dateIndex = col * 7 + row
-  if (lIndex.value <= dateIndex && dateIndex <= rIndex.value) {
-    const value = list.value[dateIndex - lIndex.value][1]
-    return { backgroundColor: getBackgroundColor(value) }
-  }
-  return { backgroundColor: 'transparent' }
+async function checkRange(row, col) {
+	const dateIndex = col * 7 + row;
+	if (lIndex.value <= dateIndex && dateIndex <= rIndex.value) {
+		const value = list.value[dateIndex - lIndex.value][1];
+		return { backgroundColor: getBackgroundColor(value) };
+	}
+	return { backgroundColor: "transparent" };
 }
 
-function tooltip(row, col) {
-  const dateIndex = col * 7 + row
-  if (lIndex.value <= dateIndex && dateIndex <= rIndex.value)
-    return (
-      new Date(list.value[dateIndex - lIndex.value][0] + 24 * 3600000)
-        .toISOString()
-        .substring(0, 10) +
-      ', ' +
-      list.value[dateIndex - lIndex.value][1] +
-      ' type'
-    )
+async function tooltip(row, col) {
+	const dateIndex = col * 7 + row;
+	if (lIndex.value <= dateIndex && dateIndex <= rIndex.value)
+		return (
+			new Date(list.value[dateIndex - lIndex.value][0] + 24 * 3600000)
+				.toISOString()
+				.substring(0, 10) +
+			", " +
+			list.value[dateIndex - lIndex.value][1] +
+			" type"
+		);
 }
 
-function calculateMonths() {
-  months.value = []
-  let currentMonth = new Date(list.value[0][0]).getMonth()
-  let currentMonthStartIndex = 0
+async function calculateMonths() {
+	months.value = [];
+	let currentMonth = new Date(list.value[0][0]).getMonth();
+	let currentMonthStartIndex = 0;
 
-  for (let i = 0; i < list.value.length; i++) {
-    let date = new Date(list.value[i][0])
-    if (date.getMonth() !== currentMonth) {
-      let daysInMonth = i - currentMonthStartIndex
-      if (daysInMonth >= 7) {
-        let monthName = new Date(list.value[currentMonthStartIndex][0]).toLocaleString('default', {
-          month: 'short'
-        })
-        let monthWidth = (daysInMonth * 1.1) / 7 + 'rem'
-        months.value.push({ name: monthName, width: monthWidth })
-      }
-      currentMonth = date.getMonth()
-      currentMonthStartIndex = i
-    }
-  }
+	for (let i = 0; i < list.value.length; i++) {
+		const date = new Date(list.value[i][0]);
+		if (date.getMonth() !== currentMonth) {
+			const daysInMonth = i - currentMonthStartIndex;
+			if (daysInMonth >= 7) {
+				const monthName = new Date(
+					list.value[currentMonthStartIndex][0],
+				).toLocaleString("default", {
+					month: "short",
+				});
+				const monthWidth = (daysInMonth * 1.1) / 7 + "rem";
+				months.value.push({ name: monthName, width: monthWidth });
+			}
+			currentMonth = date.getMonth();
+			currentMonthStartIndex = i;
+		}
+	}
 
-  let finalDaysInMonth = list.value.length - currentMonthStartIndex
-  if (finalDaysInMonth >= 7) {
-    let monthName = new Date(list.value[currentMonthStartIndex][0]).toLocaleString('default', {
-      month: 'short'
-    })
-    let monthWidth = (finalDaysInMonth * 1.1) / 7 + 'rem'
-    months.value.push({ name: monthName, width: monthWidth })
-  }
+	const finalDaysInMonth = list.value.length - currentMonthStartIndex;
+	if (finalDaysInMonth >= 7) {
+		const monthName = new Date(
+			list.value[currentMonthStartIndex][0],
+		).toLocaleString("default", {
+			month: "short",
+		});
+		const monthWidth = (finalDaysInMonth * 1.1) / 7 + "rem";
+		months.value.push({ name: monthName, width: monthWidth });
+	}
 }
 </script>
 

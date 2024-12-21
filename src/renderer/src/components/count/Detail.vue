@@ -36,29 +36,37 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-const router = useRouter()
-let todayTime = ref(parseInt(localStorage.getItem('todayTime') || 0))
-let totalTime = ref(parseInt(localStorage.getItem('totalTime') || 0))
+import { onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
+const router = useRouter();
+const todayTime = ref(Number.parseInt(localStorage.getItem("todayTime") || 0));
+const totalTime = ref(Number.parseInt(localStorage.getItem("totalTime") || 0));
 
-let todayLearn = ref(parseInt(localStorage.getItem('todayLearn') || 0))
-let totalLearn = ref(parseInt(localStorage.getItem('totalLearn') || 0))
+const todayLearn = ref(
+	Number.parseInt(localStorage.getItem("todayLearn") || 0),
+);
+const totalLearn = ref(
+	Number.parseInt(localStorage.getItem("totalLearn") || 0),
+);
 
-let todayReview = ref(parseInt(localStorage.getItem('todayReview') || 0))
-let totalReview = ref(parseInt(localStorage.getItem('totalReview') || 0))
+const todayReview = ref(
+	Number.parseInt(localStorage.getItem("todayReview") || 0),
+);
+const totalReview = ref(
+	Number.parseInt(localStorage.getItem("totalReview") || 0),
+);
 
-let todayCount = ref(0)
-let totalCount = ref(0)
+const todayCount = ref(0);
+const totalCount = ref(0);
 
 onMounted(() => {
-  window.count.getTodayCount().then((data) => {
-    todayCount.value = data
-  })
-  window.count.getTotalCount().then((data) => {
-    totalCount.value = data
-  })
-})
+	window.count.getTodayCount().then((data) => {
+		todayCount.value = data;
+	});
+	window.count.getTotalCount().then((data) => {
+		totalCount.value = data;
+	});
+});
 </script>
 
 <style scoped>

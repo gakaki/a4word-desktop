@@ -22,8 +22,8 @@
 
 <script>
 export default {
-  name: 'TodayList'
-}
+	name: "TodayList",
+};
 </script>
 
 <script setup>
@@ -44,7 +44,7 @@ const initData = async () => {
 
 // 1、updateWord：边界维护，更新cur，cur.content, wordIndex，chars, charIndex
 // 2、speech, scroll
-function updateWord(index) {
+async function updateWord(index) {
   if (wordList.value.length == 0) return
   if (index < 0) index = 0
   if (index >= wordList.value.length) index = wordList.value.length - 1
@@ -65,7 +65,7 @@ function updateWord(index) {
   scrollToItem(wordIndex.value)
 }
 
-function fetchClass(index) {
+async function fetchClass(index) {
   if (index == wordIndex.value) return 'positive item border'
   if (wordList.value[index].completeTag) return 'item complete'
   return 'item'

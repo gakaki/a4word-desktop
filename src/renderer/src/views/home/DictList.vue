@@ -83,174 +83,181 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
-import * as XLSX from 'xlsx'
-const { utils } = XLSX
-let classList = ref(null)
-let selectId = ref(null)
-let dictList = ref(null)
+import { onMounted, ref } from "vue";
+import * as XLSX from "xlsx";
+const { utils } = XLSX;
+const classList = ref(null);
+const selectId = ref(null);
+const dictList = ref(null);
 
 onMounted(() => {
-  fetchClass()
-})
+	fetchClass();
+});
 
-function fetchClass() {
-  window.dict.listClass().then((data) => {
-    classList.value = data
-    if (data.length <= 0) return
+async function fetchClass() {
+	window.dict.listClass().then((data) => {
+		classList.value = data;
+		if (data.length <= 0) return;
 
-    selectId.value = classList.value[0].id
-    fetchDictList(selectId.value)
-  })
-}
-
-function fetchDictList(id) {
-  selectId.value = id
-  window.dict.listByClassId(id).then((data) => {
-    dictList.value = data
-  })
+		selectId.value = classList.value[0].id;
+		fetchDictList(selectId.value);
+	});
 }
 
-let dictId = ref(null)
-let tmpDict = ref(null)
-function selectDict(dict) {
-  dictId.value = dict.id
-  tmpDict.value = dict
-  document.getElementById('dialog').showModal()
-}
-function hideModal() {
-  document.getElementById('remove').close()
-  document.getElementById('dialog').close()
-  document.getElementById('upload').close()
-}
-function uploadDict() {
-  document.getElementById('upload').showModal()
+async function fetchDictList(id) {
+	selectId.value = id;
+	window.dict.listByClassId(id).then((data) => {
+		dictList.value = data;
+	});
 }
 
-function showRemoveDialog(dict) {
-  dictId.value = dict.id
-  document.getElementById('remove').showModal()
+const dictId = ref(null);
+const tmpDict = ref(null);
+async function selectDict(dict) {
+	dictId.value = dict.id;
+	tmpDict.value = dict;
+	document.getElementById("dialog").showModal();
 }
-function removeDict() {
-  window.dict.removeDictById(dictId.value).then(() => {
-    hideModal()
-    fetchDictList(selectId.value)
-  })
+async function hideModal() {
+	document.getElementById("remove").close();
+	document.getElementById("dialog").close();
+	document.getElementById("upload").close();
+}
+async function uploadDict() {
+	document.getElementById("upload").showModal();
 }
 
-import { useRouter } from 'vue-router'
-const router = useRouter()
-function submitDict() {
-  localStorage.setItem('dictId', dictId.value)
-  // 重置列表定位
-  localStorage.setItem('TaskList', 0)
-  localStorage.setItem('LikeList', 0)
-  localStorage.setItem('TotalList', 0)
-  localStorage.setItem('CompleteList', 0)
-  router.push('/')
+async function showRemoveDialog(dict) {
+	dictId.value = dict.id;
+	document.getElementById("remove").showModal();
+}
+async function removeDict() {
+	window.dict.removeDictById(dictId.value).then(() => {
+		hideModal();
+		fetchDictList(selectId.value);
+	});
+}
+
+import { useRouter } from "vue-router";
+const router = useRouter();
+async function submitDict() {
+	localStorage.setItem("dictId", dictId.value);
+	// 重置列表定位
+	localStorage.setItem("TaskList", 0);
+	localStorage.setItem("LikeList", 0);
+	localStorage.setItem("TotalList", 0);
+	localStorage.setItem("CompleteList", 0);
+	router.push("/");
 }
 
 // FILE UPLOAD
-const dropZone = ref(null)
-const fileInput = ref(null)
+const dropZone = ref(null);
+const fileInput = ref(null);
 
 const resetDropZone = () => {
-  dropZone.value.style.backgroundColor = ''
-}
+	dropZone.value.style.backgroundColor = "";
+};
 
 const handleDrop = async (e) => {
-  e.stopPropagation()
-  e.preventDefault()
+	e.stopPropagation();
+	e.preventDefault();
 
-  const file = e.dataTransfer.files
-  handleFiles(file)
-}
+	const file = e.dataTransfer.files;
+	handleFiles(file);
+};
 
 const triggerFileInput = () => {
-  fileInput.value.click()
-}
+	fileInput.value.click();
+};
 
 const handleFileChange = () => {
-  const files = fileInput.value.files
-  handleFiles(files)
-}
+	const files = fileInput.value.files;
+	handleFiles(files);
+};
 
 const handleFiles = (files) => {
-  if (files.length > 1) {
-    alert('仅支持上传一个文件')
-    return
-  }
-  const file = files[0]
-  if (
-    file.type === 'application/vnd.ms-excel' ||
-    file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-  ) {
-    readExcelFile(file)
-  } else {
-    alert('仅支持上传Excel文件')
-  }
-}
+	if (files.length > 1) {
+		alert("仅支持上传一个文件");
+		return;
+	}
+	const file = files[0];
+	if (
+		file.type === "application/vnd.ms-excel" ||
+		file.type ===
+			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+	) {
+		readExcelFile(file);
+	} else {
+		alert("仅支持上传Excel文件");
+	}
+};
 
-let fileName = ref('')
-let intro = ref('')
-let words = ref([])
-let ids = ref([])
-let failWords = ref([])
+const fileName = ref("");
+const intro = ref("");
+const words = ref([]);
+const ids = ref([]);
+const failWords = ref([]);
 const readExcelFile = async (file) => {
-  const reader = new FileReader()
-  reader.onload = (event) => {
-    const data = new Uint8Array(event.target.result)
-    const workbook = XLSX.read(data, { type: 'array' })
-    const firstSheetName = workbook.SheetNames[0]
-    const worksheet = workbook.Sheets[firstSheetName]
-    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 })
+	const reader = new FileReader();
+	reader.onload = (event) => {
+		const data = new Uint8Array(event.target.result);
+		const workbook = XLSX.read(data, { type: "array" });
+		const firstSheetName = workbook.SheetNames[0];
+		const worksheet = workbook.Sheets[firstSheetName];
+		const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-    fileName.value = file.name.split('.').slice(0, -1).join('.')
-    words.value = []
-    jsonData.forEach((row, index) => {
-      if (index === 0 && row[1]) {
-        intro.value = row[1]
-      }
-      words.value.push(row[0])
-    })
-    window.word.listAll().then((data) => {
-      collectIds(data)
-    })
-  }
-  reader.readAsArrayBuffer(file)
-}
+		fileName.value = file.name.split(".").slice(0, -1).join(".");
+		words.value = [];
+		jsonData.forEach((row, index) => {
+			if (index === 0 && row[1]) {
+				intro.value = row[1];
+			}
+			words.value.push(row[0]);
+		});
+		window.word.listAll().then((data) => {
+			collectIds(data);
+		});
+	};
+	reader.readAsArrayBuffer(file);
+};
 
 const collectIds = (all) => {
-  words.value.forEach((word) => {
-    const match = all.find((item) => item.word === word)
-    if (match) {
-      ids.value.push(match.id)
-    } else {
-      failWords.value.push(word)
-    }
-  })
-  hideModal()
-  document.getElementById('submit').showModal()
-}
+	words.value.forEach((word) => {
+		const match = all.find((item) => item.word === word);
+		if (match) {
+			ids.value.push(match.id);
+		} else {
+			failWords.value.push(word);
+		}
+	});
+	hideModal();
+	document.getElementById("submit").showModal();
+};
 
-function cancelUpload() {
-  document.getElementById('submit').close()
-  intro.value = ''
-  words.value = []
-  ids.value = []
-  failWords.value = []
+async function cancelUpload() {
+	document.getElementById("submit").close();
+	intro.value = "";
+	words.value = [];
+	ids.value = [];
+	failWords.value = [];
 }
-function submitUpload() {
-  let dictIds = ''
-  for (let i = 0; i < dictList.value.length; i++) {
-    dictIds = dictIds + dictList.value[i].id + ';'
-  }
-  window.dict
-    .saveDict(JSON.stringify(ids.value), fileName.value, intro.value, dictIds, selectId.value)
-    .then(() => {
-      cancelUpload()
-      fetchDictList(selectId.value)
-    })
+async function submitUpload() {
+	let dictIds = "";
+	for (let i = 0; i < dictList.value.length; i++) {
+		dictIds = dictIds + dictList.value[i].id + ";";
+	}
+	window.dict
+		.saveDict(
+			JSON.stringify(ids.value),
+			fileName.value,
+			intro.value,
+			dictIds,
+			selectId.value,
+		)
+		.then(() => {
+			cancelUpload();
+			fetchDictList(selectId.value);
+		});
 }
 </script>
 

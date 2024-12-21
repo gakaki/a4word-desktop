@@ -100,18 +100,18 @@
 </template>
 
 <script>
-import TaskList from '../../components/list/TaskList.vue'
-import CompleteList from '../../components/list/CompleteList.vue'
-import LikeList from '../../components/list/LikeList.vue'
-import TotalList from '../../components/list/TotalList.vue'
+import CompleteList from "../../components/list/CompleteList.vue";
+import LikeList from "../../components/list/LikeList.vue";
+import TaskList from "../../components/list/TaskList.vue";
+import TotalList from "../../components/list/TotalList.vue";
 export default {
-  components: {
-    TaskList,
-    TotalList,
-    CompleteList,
-    LikeList
-  }
-}
+	components: {
+		TaskList,
+		TotalList,
+		CompleteList,
+		LikeList,
+	},
+};
 </script>
 
 <script setup>
@@ -125,24 +125,24 @@ let seeTag = ref(false || localStorage.getItem('seeTag') == 'true')
 // 动态词表
 let currentList = ref('TaskList')
 
-function switchSeeTag() {
+async function switchSeeTag() {
   seeTag.value = !seeTag.value
   localStorage.setItem('seeTag', seeTag.value)
 }
 
-function switchLike() {
+async function switchLike() {
   cur.value.likeTag = !cur.value.likeTag
   window.word.switchLike(cur.value.id)
 }
 
-function switchComplete() {
+async function switchComplete() {
   cur.value.completeTag = !cur.value.completeTag
   window.word.switchComplete(cur.value.id)
   if (cur.value.completeTag) wordIndex.value++
 }
 
 // 避免空格下拉
-document.addEventListener('keydown', function (event) {
+document.addEventListener('keydown', async function (event) {
   if (event.key === ' ') event.preventDefault()
 })
 
@@ -200,19 +200,19 @@ const handleKeyup = (event) => {
   }
 }
 
-function switchComponent(listName) {
+async function switchComponent(listName) {
   if (listName === currentList.value) return
   storeIndex()
   currentList.value = listName
 }
 
-function check(i) {
+async function check(i) {
   if (currentList.value === 'TotalList') return false
   if (currentList.value === 'TaskList') return wordList.value[i].completeTag
   if (currentList.value === 'CompleteList') return !wordList.value[i].completeTag
   return !wordList.value[i].likeTag
 }
-function storeIndex() {
+async function storeIndex() {
   if (wordList.value.length === 0) return
   let cnt = 0
   for (let i = wordIndex.value; i >= 0; i--) if (check(i)) cnt++

@@ -6,7 +6,7 @@
 </template>
 
 <script setup>
-import Head from './components/Head.vue'
+import Head from "./components/Head.vue";
 </script>
 
 <style scoped> 

@@ -58,87 +58,90 @@
 </template>
 
 <script setup>
-import { playStatus, playClick, speech } from '../../util/sound'
+import { onMounted, onUnmounted, ref } from "vue";
+import LearnList from "../../components/list/LearnList.vue";
+import { clearTimeInterval, dayTimeInterval } from "../../util/common";
+import { playClick, playStatus, speech } from "../../util/sound";
 import {
-  switchComplete,
-  switchLike,
-  highlightWords,
-  cur,
-  wordIndex,
-  chars,
-  charIndex
-} from '../../util/wordUtil'
-import { dayTimeInterval, clearTimeInterval } from '../../util/common'
-import LearnList from '../../components/list/LearnList.vue'
-import { ref, onMounted, onUnmounted } from 'vue'
+	charIndex,
+	chars,
+	cur,
+	highlightWords,
+	switchComplete,
+	switchLike,
+	wordIndex,
+} from "../../util/wordUtil";
 
 // 默写模式
-let seeTag = ref(false)
+const seeTag = ref(false);
 
-function switchCompleteEvent() {
-  switchComplete(cur.value)
-  if (cur.value.completeTag) {
-    seeTag.value = false
-    wordIndex.value++
-  }
+async function switchCompleteEvent() {
+	switchComplete(cur.value);
+	if (cur.value.completeTag) {
+		seeTag.value = false;
+		wordIndex.value++;
+	}
 }
 
 const handleCtrlKey = (event) => {
-  if (event.altKey) {
-    switch (event.key) {
-      case 'l':
-        switchLike(cur.value)
-        break
-      case 'f':
-        switchCompleteEvent()
-        break
-    }
-  } else if (event.key === 's') speech(cur.value.word)
-}
+	if (event.altKey) {
+		switch (event.key) {
+			case "l":
+				switchLike(cur.value);
+				break;
+			case "f":
+				switchCompleteEvent();
+				break;
+		}
+	} else if (event.key === "s") speech(cur.value.word);
+};
 
 const handleComlete = () => {
-  playClick()
-  window.count.increTypeCount()
-  if (seeTag.value) {
-    localStorage.setItem('typeIds', (localStorage.getItem('typeIds') || '-1') + ',' + cur.value.id)
-    wordIndex.value++
-  }
-  seeTag.value = !seeTag.value
-  charIndex.value = 0
-  speech(cur.value.word)
-}
+	playClick();
+	window.count.increTypeCount();
+	if (seeTag.value) {
+		localStorage.setItem(
+			"typeIds",
+			(localStorage.getItem("typeIds") || "-1") + "," + cur.value.id,
+		);
+		wordIndex.value++;
+	}
+	seeTag.value = !seeTag.value;
+	charIndex.value = 0;
+	speech(cur.value.word);
+};
 const handleKeyup = (event) => {
-  if (event.ctrlKey) {
-    // FAST KEY
-    handleCtrlKey(event)
-    return
-  }
-  if (charIndex.value === chars.value.length) {
-    // COMPLETE
-    handleComlete()
-    return
-  }
-  if (chars.value[charIndex.value] === event.key) {
-    // EQ
-    charIndex.value++
-    playClick()
-  } else if (/^[a-zA-Z ]$/.test(event.key)) {
-    // FAIL
-    charIndex.value = 0
-    playStatus()
-    speech(cur.value.word)
-  }
-}
+	if (event.ctrlKey) {
+		// FAST KEY
+		handleCtrlKey(event);
+		return;
+	}
+	if (charIndex.value === chars.value.length) {
+		// COMPLETE
+		handleComlete();
+		return;
+	}
+	if (chars.value[charIndex.value] === event.key) {
+		// EQ
+		charIndex.value++;
+		playClick();
+	} else if (/^[a-zA-Z ]$/.test(event.key)) {
+		// FAIL
+		charIndex.value = 0;
+		playStatus();
+		speech(cur.value.word);
+	}
+};
 
 onMounted(() => {
-  dayTimeInterval()
-  window.addEventListener('keyup', handleKeyup)
-})
+	dayTimeInterval();
+	window.addEventListener("keyup", handleKeyup);
+});
 
 onUnmounted(() => {
-  clearTimeInterval()
-  window.removeEventListener('keyup', handleKeyup)
-})
+	clearTimeInterval();
+	window.removeEventListener("keyup", handleKeyup);
+});
 </script>
 
 

@@ -45,42 +45,42 @@
 </template>
 
 <script setup>
-import Count from '../../components/count/Count.vue'
-import Detail from '../../components/count/Detail.vue'
-import { initTime } from '../../util/common'
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-const router = useRouter()
-let dict = ref({})
-let countCompleteByDictId = ref(0)
-let countLearnByDictId = ref(0)
-let countReview = ref(0)
-let count = ref(true)
+import { onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
+import Count from "../../components/count/Count.vue";
+import Detail from "../../components/count/Detail.vue";
+import { initTime } from "../../util/common";
+const router = useRouter();
+const dict = ref({});
+const countCompleteByDictId = ref(0);
+const countLearnByDictId = ref(0);
+const countReview = ref(0);
+const count = ref(true);
 
 onMounted(() => {
-  initTime()
-  let dictId = localStorage.getItem('dictId')
-  if (dictId === null) {
-    dictId = 1
-    localStorage.setItem('dictId', dictId)
-  }
-  window.dict.getDictById(dictId).then((data) => {
-    dict.value = data
-  })
-  window.word.fetchCount(dictId).then((data) => {
-    countCompleteByDictId.value = data.completeCount
-    countLearnByDictId.value = data.learnCount
-    countReview.value = data.reviewCount
-  })
-})
+	initTime();
+	let dictId = localStorage.getItem("dictId");
+	if (dictId === null) {
+		dictId = 1;
+		localStorage.setItem("dictId", dictId);
+	}
+	window.dict.getDictById(dictId).then((data) => {
+		dict.value = data;
+	});
+	window.word.fetchCount(dictId).then((data) => {
+		countCompleteByDictId.value = data.completeCount;
+		countLearnByDictId.value = data.learnCount;
+		countReview.value = data.reviewCount;
+	});
+});
 
-function route(path) {
-  if (
-    (path === 'review' && countReview.value === 0) ||
-    (path === 'learn' && countLearnByDictId.value === 0)
-  )
-    return
-  router.push(`/${path}`)
+async function route(path) {
+	if (
+		(path === "review" && countReview.value === 0) ||
+		(path === "learn" && countLearnByDictId.value === 0)
+	)
+		return;
+	router.push(`/${path}`);
 }
 </script>
 

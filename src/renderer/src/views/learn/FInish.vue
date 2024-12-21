@@ -62,77 +62,78 @@
 </template>
 
 <script setup>
-import { speech } from '../../util/sound'
-import { storeCnt } from '../../util/common'
-import { ref, onMounted } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { onMounted, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { storeCnt } from "../../util/common";
+import { speech } from "../../util/sound";
 
-const route = useRoute()
-const path = route.query.path
-let wordList = ref(null)
-let cur = ref(null)
+const route = useRoute();
+const path = route.query.path;
+const wordList = ref(null);
+const cur = ref(null);
 
 onMounted(() => {
-  initData()
-})
+	initData();
+});
 
 // 提交复习列表，更新单词复习时间与周期
-function submit() {
-  let tmpList = wordList.value.filter((item) => item.completeTag === 0)
-  if (path === 'learn') {
-    storeCnt('Learn', wordList.value.length)
-    for (let i = 0; i < tmpList.length; i++) window.word.saveReviewTime(tmpList[i].id)
-  } else {
-    storeCnt('Review', wordList.value.length)
-    let keepList = JSON.parse(route.query.keepList)
- 
-    for (let i = 0; i < tmpList.length; i++) {
-      if (!keepList.includes(tmpList[i].id)) { 
-        tmpList[i].reviewCycle === 6
-          ? window.word.switchComplete(tmpList[i].id)
-          : window.word.increReviewCycle(tmpList[i].id, tmpList[i].reviewCycle)
-      } else { 
-        window.word.increReviewCycle(tmpList[i].id, tmpList[i].reviewCycle - 1)
-      }
-    }
-  }
+async function submit() {
+	const tmpList = wordList.value.filter((item) => item.completeTag === 0);
+	if (path === "learn") {
+		storeCnt("Learn", wordList.value.length);
+		for (let i = 0; i < tmpList.length; i++)
+			window.word.saveReviewTime(tmpList[i].id);
+	} else {
+		storeCnt("Review", wordList.value.length);
+		const keepList = JSON.parse(route.query.keepList);
+
+		for (let i = 0; i < tmpList.length; i++) {
+			if (!keepList.includes(tmpList[i].id)) {
+				tmpList[i].reviewCycle === 6
+					? window.word.switchComplete(tmpList[i].id)
+					: window.word.increReviewCycle(tmpList[i].id, tmpList[i].reviewCycle);
+			} else {
+				window.word.increReviewCycle(tmpList[i].id, tmpList[i].reviewCycle - 1);
+			}
+		}
+	}
 }
 
-const router = useRouter()
+const router = useRouter();
 
-function initData() {
-  let ids = route.query.ids
-  window.word.listByIds(ids).then((data) => {
-    wordList.value = data
-    submit()
-    cur.value = wordList.value[0]
-    for (let i = 0; i < data.length; i++) {
-      let tmp = JSON.parse(data[i].content)
-      data[i].voice = tmp.voice
-      data[i].tran = tmp.tran
-      data[i].phrase = tmp.phrase
-      data[i].sentence = tmp.sentence
-    }
-  })
+async function initData() {
+	const ids = route.query.ids;
+	window.word.listByIds(ids).then((data) => {
+		wordList.value = data;
+		submit();
+		cur.value = wordList.value[0];
+		for (let i = 0; i < data.length; i++) {
+			const tmp = JSON.parse(data[i].content);
+			data[i].voice = tmp.voice;
+			data[i].tran = tmp.tran;
+			data[i].phrase = tmp.phrase;
+			data[i].sentence = tmp.sentence;
+		}
+	});
 }
-function tip(word) {
-  return word.tran[0].pos + '. ' + word.tran[0].cn
-}
-
-function updateWord(index) {
-  if (index >= wordList.value.length || index < 0) return // 越界
-  cur.value = wordList.value[index]
-  speech(cur.value.word)
-  dialog.showModal()
+async function tip(word) {
+	return word.tran[0].pos + ". " + word.tran[0].cn;
 }
 
-function switchComplete() {
-  cur.value.completeTag = !cur.value.completeTag
-  window.word.switchComplete(cur.value.id)
+async function updateWord(index) {
+	if (index >= wordList.value.length || index < 0) return; // 越界
+	cur.value = wordList.value[index];
+	speech(cur.value.word);
+	dialog.showModal();
 }
-function switchLike() {
-  cur.value.likeTag = !cur.value.likeTag
-  window.word.switchLike(cur.value.id)
+
+async function switchComplete() {
+	cur.value.completeTag = !cur.value.completeTag;
+	window.word.switchComplete(cur.value.id);
+}
+async function switchLike() {
+	cur.value.likeTag = !cur.value.likeTag;
+	window.word.switchLike(cur.value.id);
 }
 </script>
 
