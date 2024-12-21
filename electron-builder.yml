@@ -1,5 +1,5 @@
-appId: com.electron.app
-productName: electron-app
+appId: com.a4word.app
+productName: A4背单词
 directories:
   buildResources: build
 files:
@@ -12,7 +12,7 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: electron-app
+  executableName: a4word
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
